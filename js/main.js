@@ -8,16 +8,13 @@
 'use strict';
 
 import Player from "./player.js";
+import { CANVAS, CTX, MS_PER_FRAME, SPACE } from "./constants.js";
 
-const CANVAS = document.querySelector('canvas')
-const CTX = CANVAS.getContext('2d')
-
-const HERO = new Player(0, 0, 40, 40, CTX);
+const HERO = new Player(10, 10, 40, 40);
 
 let frame_time = performance.now()
 let pause = false;
-const FPS = 60
-const MS_PER_FRAME = 1000 / FPS
+
 
 /**
  * Disable the context menu on the entire document
@@ -44,11 +41,27 @@ function $(id) { return document.getElementById(id); }
  * @param {Number} dy Destination y (default=0)
  */
 function test_sprite(sheet, sx, sy, sw, sh, dx=0, dy=0, clear=false) {
-  if (clear) CTX.clearRect(0, 0, CANVAS.width, CANVAS.height);
+  if (clear) C.CTX.clearRect(0, 0, C.CANVAS.width, C.CANVAS.height);
 
-  CTX.drawImage($(sheet), sx, sy, sw, sh, dx, dy, sw, sh);
+  C.CTX.drawImage($(sheet), sx, sy, sw, sh, dx, dy, sw, sh);
 }
 
+document.addEventListener("keydown", keypress);
+
+function keypress(event) {
+  switch (event.keyCode) {
+    case SPACE:
+      // Jump
+      HERO.jump();
+      break;
+  }
+  //event.preventDefault();
+}
+
+
+/**
+ * The main game loop
+ */
 function update() {
   // Prepare for the next frame
   if (!pause) requestAnimationFrame(update)
@@ -63,6 +76,11 @@ function update() {
   frame_time = Math.floor(NOW - EXCESS_TIME)
   /*** END FPS Trap ***/
 
+  // Clear the canvas
+  CTX.clearRect(0, 0, CANVAS.width, CANVAS.height);
+
+  // Draw our hero
+  HERO.update();
   
 }
 
